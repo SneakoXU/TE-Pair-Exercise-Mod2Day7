@@ -1,4 +1,12 @@
-CREATE SEQUENCE seq_employee_id;
+--CREATE SEQUENCE seq_employee_id;
+ALTER SEQUENCE seq_employee_id RESTART WITH 1;
+ALTER SEQUENCE seq_department_id RESTART WITH 1;
+ALTER SEQUENCE seq_project_id RESTART WITH 1;
+
+DROP TABLE project_employee;
+DROP TABLE employee;
+DROP TABLE department;
+DROP TABLE project;
 
 CREATE TABLE employee (
 	employee_id integer NOT NULL DEFAULT nextval('seq_employee_id'),
@@ -12,7 +20,7 @@ CREATE TABLE employee (
 	CONSTRAINT ck_gender CHECK (gender IN ('M', 'F'))
 );
 
-CREATE SEQUENCE seq_department_id;
+--CREATE SEQUENCE seq_department_id;
 
 CREATE TABLE department (
 	department_id integer NOT NULL DEFAULT nextval('seq_department_id'),
@@ -20,7 +28,7 @@ CREATE TABLE department (
 	CONSTRAINT pk_department_department_id PRIMARY KEY (department_id)
 );
 
-CREATE SEQUENCE seq_project_id;
+--CREATE SEQUENCE seq_project_id;
 
 CREATE TABLE project (
 	project_id integer NOT NULL DEFAULT nextval('seq_project_id'),
@@ -87,6 +95,8 @@ INSERT INTO project_employee (project_id, employee_id) VALUES (6, 5);
 INSERT INTO project_employee (project_id, employee_id) VALUES (6, 10);
 INSERT INTO project_employee (project_id, employee_id) VALUES (6, 11);
 
+
+SELECT * FROM department;
 ALTER TABLE employee ADD FOREIGN KEY (department_id) REFERENCES department(department_id);
 ALTER TABLE project_employee ADD FOREIGN KEY (project_id) REFERENCES project(project_id);
 ALTER TABLE project_employee ADD FOREIGN KEY (employee_id) REFERENCES employee(employee_id);
