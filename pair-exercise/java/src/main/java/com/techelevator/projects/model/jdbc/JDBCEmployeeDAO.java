@@ -78,8 +78,8 @@ public class JDBCEmployeeDAO implements EmployeeDAO {
 	@Override
 	public List<Employee> getEmployeesWithoutProjects() {
 		List<Employee> employeesWithoutProjects = new ArrayList<>();
-		SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT employee_id, department_id, first_name, last_name, birth_date, gender, hire_date "
-				+ "FROM employee INNER JOIN project_employee ON employee.employee_id = project_employee.employee_id");
+		SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT e.employee_id, e.department_id, e.first_name, e.last_name, e.birth_date, e.gender, e.hire_date "
+				+ "FROM employee as e INNER JOIN project_employee as pe ON e.employee_id = pe.employee_id");
 		while(rows.next()){
 			Employee employee = new Employee();
 			employee.setId(rows.getLong(1));
@@ -98,8 +98,8 @@ public class JDBCEmployeeDAO implements EmployeeDAO {
 	@Override
 	public List<Employee> getEmployeesByProjectId(Long projectId) {
 		List<Employee> employeesProjects = new ArrayList<>();
-		SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT employee_id, department_id, first_name, last_name, birth_date, gender, hire_date "
-				+ "FROM employee INNER JOIN project_employee ON employee.employee_id = project_employee.employee_id WHERE project_employee.project_id = ?", projectId);
+		SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT e.employee_id, e.department_id, e.first_name, e.last_name, e.birth_date, e.gender, e.hire_date "
+				+ "FROM employee as e INNER JOIN project_employee as pe ON e.employee_id = pe.employee_id WHERE pe.project_id = ?", projectId);
 		while(rows.next()){
 			Employee employee = new Employee();
 			employee.setId(rows.getLong(1));
