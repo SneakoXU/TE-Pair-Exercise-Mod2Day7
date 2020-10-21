@@ -6,7 +6,10 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
+import com.techelevator.projects.model.Department;
+import com.techelevator.projects.model.Employee;
 import com.techelevator.projects.model.Employee;
 import com.techelevator.projects.model.EmployeeDAO;
 
@@ -20,31 +23,104 @@ public class JDBCEmployeeDAO implements EmployeeDAO {
 	
 	@Override
 	public List<Employee> getAllEmployees() {
-		return new ArrayList<>();
+		List<Employee> allEmployees = new ArrayList<>();
+		SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT employee_id, department_id, first_name, last_name, birth_date, gender, hire_date FROM employee");
+		while(rows.next()){
+			Employee employee = new Employee();
+			employee.setId(rows.getLong(1));
+			employee.setDepartmentId(rows.getLong(2));
+			employee.setFirstName(rows.getString(3));
+			employee.setLastName(rows.getString(4));
+			employee.setBirthDay(rows.getDate(5).toLocalDate());
+			employee.setGender(rows.getString(6).charAt(0));
+			employee.setHireDate(rows.getDate(7).toLocalDate());
+			allEmployees.add(employee);
+		}
+		return allEmployees;
 	}
 
 	@Override
 	public List<Employee> searchEmployeesByName(String firstNameSearch, String lastNameSearch) {
-		return new ArrayList<>();
+		List<Employee> nameEmployees = new ArrayList<>();
+		SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT employee_id, department_id, first_name, last_name, birth_date, gender, hire_date FROM employee WHERE first_name = ? AND last_name = ?", firstNameSearch, lastNameSearch);
+		while(rows.next()){
+			Employee employee = new Employee();
+			employee.setId(rows.getLong(1));
+			employee.setDepartmentId(rows.getLong(2));
+			employee.setFirstName(rows.getString(3));
+			employee.setLastName(rows.getString(4));
+			employee.setBirthDay(rows.getDate(5).toLocalDate());
+			employee.setGender(rows.getString(6).charAt(0));
+			employee.setHireDate(rows.getDate(7).toLocalDate());
+			nameEmployees.add(employee);
+		}
+		return nameEmployees;
 	}
 
 	@Override
 	public List<Employee> getEmployeesByDepartmentId(long id) {
-		return new ArrayList<>();
+		List<Employee> employeeByName = new ArrayList<>();
+		SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT employee_id, department_id, first_name, last_name, birth_date, gender, hire_date FROM employee WHERE id = ?", id);
+		while(rows.next()){
+			Employee employee = new Employee();
+			employee.setId(rows.getLong(1));
+			employee.setDepartmentId(rows.getLong(2));
+			employee.setFirstName(rows.getString(3));
+			employee.setLastName(rows.getString(4));
+			employee.setBirthDay(rows.getDate(5).toLocalDate());
+			employee.setGender(rows.getString(6).charAt(0));
+			employee.setHireDate(rows.getDate(7).toLocalDate());
+			employeeByName.add(employee);
+		}
+		return employeeByName;
 	}
 
 	@Override
 	public List<Employee> getEmployeesWithoutProjects() {
-		return new ArrayList<>();
+		List<Employee> employeesWithoutProjects = new ArrayList<>();
+		SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT employee_id, department_id, first_name, last_name, birth_date, gender, hire_date "
+				+ "FROM employee INNER JOIN project_employee ON employee.employee_id = project_employee.employee_id");
+		while(rows.next()){
+			Employee employee = new Employee();
+			employee.setId(rows.getLong(1));
+			employee.setDepartmentId(rows.getLong(2));
+			employee.setFirstName(rows.getString(3));
+			employee.setLastName(rows.getString(4));
+			employee.setBirthDay(rows.getDate(5).toLocalDate());
+			employee.setGender(rows.getString(6).charAt(0));
+			employee.setHireDate(rows.getDate(7).toLocalDate());
+			employeesWithoutProjects.add(employee);
+		}
+		
+		return employeesWithoutProjects;
 	}
 
 	@Override
 	public List<Employee> getEmployeesByProjectId(Long projectId) {
-		return new ArrayList<>();
+		List<Employee> employeesProjects = new ArrayList<>();
+		SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT employee_id, department_id, first_name, last_name, birth_date, gender, hire_date "
+				+ "FROM employee INNER JOIN project_employee ON employee.employee_id = project_employee.employee_id WHERE project_employee.project_id = ?", projectId);
+		while(rows.next()){
+			Employee employee = new Employee();
+			employee.setId(rows.getLong(1));
+			employee.setDepartmentId(rows.getLong(2));
+			employee.setFirstName(rows.getString(3));
+			employee.setLastName(rows.getString(4));
+			employee.setBirthDay(rows.getDate(5).toLocalDate());
+			employee.setGender(rows.getString(6).charAt(0));
+			employee.setHireDate(rows.getDate(7).toLocalDate());
+			employeesProjects.add(employee);
+		}
+		
+		return employeesProjects;
 	}
+		
 
 	@Override
 	public void changeEmployeeDepartment(Long employeeId, Long departmentId) {
+		String command = "UPDATE employee SET department_id = ? WHERE employee_id = ?";
+		jdbcTemplate.update(command, departmentId, employeeId);
+		
 		
 	}
 
