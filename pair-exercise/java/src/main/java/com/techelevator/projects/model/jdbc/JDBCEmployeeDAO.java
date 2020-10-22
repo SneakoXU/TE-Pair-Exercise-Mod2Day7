@@ -60,7 +60,7 @@ public class JDBCEmployeeDAO implements EmployeeDAO {
 	@Override
 	public List<Employee> getEmployeesByDepartmentId(long id) {
 		List<Employee> employeeByName = new ArrayList<>();
-		SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT employee_id, department_id, first_name, last_name, birth_date, gender, hire_date FROM employee WHERE id = ?", id);
+		SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT employee_id, department_id, first_name, last_name, birth_date, gender, hire_date FROM employee WHERE department_id = ?", id);
 		while(rows.next()){
 			Employee employee = new Employee();
 			employee.setId(rows.getLong(1));
@@ -79,7 +79,7 @@ public class JDBCEmployeeDAO implements EmployeeDAO {
 	public List<Employee> getEmployeesWithoutProjects() {
 		List<Employee> employeesWithoutProjects = new ArrayList<>();
 		SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT e.employee_id, e.department_id, e.first_name, e.last_name, e.birth_date, e.gender, e.hire_date "
-				+ "FROM employee as e LEFT OUTER JOIN project_employee as pe ON e.employee_id = pe.employee_id");
+				+ "FROM employee as e LEFT OUTER JOIN project_employee as pe ON e.employee_id = pe.employee_id WHERE pe.project_id IS NULL");
 		while(rows.next()){
 			Employee employee = new Employee();
 			employee.setId(rows.getLong(1));

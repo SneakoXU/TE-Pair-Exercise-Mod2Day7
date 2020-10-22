@@ -26,6 +26,7 @@ public class JDBCDepartmentDAOIntegrationTest {
 	
 	private static final String TEST_DEPARTMENT = "XYZ";
 	private static final String UPDATED_DEPARTMENT = "123";
+	private static final String NEW_DEPARTMENT = "ABC";
 	
 	private static SingleConnectionDataSource dataSource;
 	private JDBCDepartmentDAO dao;
@@ -70,19 +71,21 @@ public class JDBCDepartmentDAOIntegrationTest {
 		SqlRowSet rows = jdbcTemplate.queryForRowSet(sqlCheckUpdate, testDepartment.getId());
 		assertEquals(true, rows.next());
 		assertEquals(UPDATED_DEPARTMENT, rows.getString(1));
-		assertEquals(testDepartment, dao.getDepartmentById(testDepartment.getId()));
+		Department resultDepartment = dao.getDepartmentById(testDepartment.getId());
+		assertEquals(testDepartment.getId(), resultDepartment.getId());
+		assertEquals(testDepartment.getName(), resultDepartment.getName());
 	}
 	
 	@Test
 	public void created_department_should_insert() {
 		Department createdDept = new Department();
-		createdDept.setName(TEST_DEPARTMENT);
+		createdDept.setName(NEW_DEPARTMENT);
 		createdDept = dao.createDepartment(createdDept);
 		String sqlCheckUpdate = "SELECT name FROM department WHERE department_id = ?";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		SqlRowSet rows = jdbcTemplate.queryForRowSet(sqlCheckUpdate, createdDept.getId());
 		assertEquals(true, rows.next());
-		assertEquals(TEST_DEPARTMENT, rows.getString(1));
+		assertEquals(NEW_DEPARTMENT, rows.getString(1));
 	}
 	
 	
