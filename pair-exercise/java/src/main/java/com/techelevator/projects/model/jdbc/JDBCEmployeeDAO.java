@@ -79,7 +79,7 @@ public class JDBCEmployeeDAO implements EmployeeDAO {
 	public List<Employee> getEmployeesWithoutProjects() {
 		List<Employee> employeesWithoutProjects = new ArrayList<>();
 		SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT e.employee_id, e.department_id, e.first_name, e.last_name, e.birth_date, e.gender, e.hire_date "
-				+ "FROM employee as e INNER JOIN project_employee as pe ON e.employee_id = pe.employee_id");
+				+ "FROM employee as e LEFT OUTER JOIN project_employee as pe ON e.employee_id = pe.employee_id");
 		while(rows.next()){
 			Employee employee = new Employee();
 			employee.setId(rows.getLong(1));
