@@ -31,6 +31,8 @@ public class JDBCDepartmentDAOIntegrationTest {
 	private static SingleConnectionDataSource dataSource;
 	private JDBCDepartmentDAO dao;
 	
+	private Department target;
+	
 	@BeforeClass
 	public static void setupDataSource() {
 		dataSource = new SingleConnectionDataSource();
@@ -52,6 +54,12 @@ public class JDBCDepartmentDAOIntegrationTest {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		jdbcTemplate.update(sqlInsertDepartment, TEST_DEPARTMENT);
 		dao = new JDBCDepartmentDAO(dataSource);
+		
+		SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT department_id, name FROM department WHERE name = ?", TEST_DEPARTMENT);
+		rows.next();
+		target = new Department();
+		target.setId(rows.getLong(1));
+		target.setName(rows.getString(2));
 	}
 
 	@After
@@ -63,17 +71,24 @@ public class JDBCDepartmentDAOIntegrationTest {
 	public void search_by_name_should_return_row() {
 		List<Department> testList = dao.searchDepartmentsByName(TEST_DEPARTMENT);
 		assertNotEquals(0, testList.size());
-		Department testDepartment = testList.get(0);
-		testDepartment.setName(UPDATED_DEPARTMENT);
-		dao.saveDepartment(testDepartment);
+		boolean targetFound = false;
+		for(Department department : testList){
+			if(department.getId() == target.getId()){
+				targetFound = true;
+				break;
+			}
+		}
+		assertEquals(true, targetFound);
+		target.setName(UPDATED_DEPARTMENT);
+		dao.saveDepartment(target);
 		String sqlCheckUpdate = "SELECT name FROM department WHERE department_id = ?";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-		SqlRowSet rows = jdbcTemplate.queryForRowSet(sqlCheckUpdate, testDepartment.getId());
+		SqlRowSet rows = jdbcTemplate.queryForRowSet(sqlCheckUpdate, target.getId());
 		assertEquals(true, rows.next());
 		assertEquals(UPDATED_DEPARTMENT, rows.getString(1));
-		Department resultDepartment = dao.getDepartmentById(testDepartment.getId());
-		assertEquals(testDepartment.getId(), resultDepartment.getId());
-		assertEquals(testDepartment.getName(), resultDepartment.getName());
+		Department resultDepartment = dao.getDepartmentById(target.getId());
+		assertEquals(target.getId(), resultDepartment.getId());
+		assertEquals(target.getName(), resultDepartment.getName());
 	}
 	
 	@Test
